@@ -1,4 +1,5 @@
 import { siteConfig } from "@/site.config"
+import { getMarkdownIndexSection } from "@/lib/llms-md"
 
 const tools = [
   { name: "LinkedIn Post Formatter", slug: "linkedin-formatter", description: "Format LinkedIn posts with Unicode bold/italic text, bullet points, and line breaks." },
@@ -16,6 +17,8 @@ ${siteConfig.description}
 
 ## Social Media Text Formatters
 ${tools.map((t) => `- [${t.name}](https://${siteConfig.domain}/${t.slug}): ${t.description}`).join("\n")}
+
+${getMarkdownIndexSection(siteConfig.baseUrl)}
 
 ## About
 - Free, no sign-up required

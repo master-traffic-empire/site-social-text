@@ -1,13 +1,7 @@
 import type { Metadata } from "next"
 import { NextRequest } from "next/server"
+import { MD_PAGES as PAGES } from "@/lib/md-pages"
 import { siteConfig } from "@/site.config"
-import { metadata as linkedinFormatter } from "@/app/linkedin-formatter/page"
-import { metadata as twitterThread } from "@/app/twitter-thread/page"
-import { metadata as instagramCaption } from "@/app/instagram-caption/page"
-import { metadata as unicodeText } from "@/app/unicode-text/page"
-import { metadata as postTemplates } from "@/app/post-templates/page"
-import { metadata as about } from "@/app/about/page"
-import { metadata as privacy } from "@/app/privacy/page"
 
 export const dynamic = "force-dynamic"
 
@@ -23,15 +17,6 @@ export const dynamic = "force-dynamic"
 //   2. Anything else (including the home page) gets a site-level response that SAYS it is
 //      site-level.
 
-const PAGES: Record<string, Metadata> = {
-  "linkedin-formatter": linkedinFormatter,
-  "twitter-thread": twitterThread,
-  "instagram-caption": instagramCaption,
-  "unicode-text": unicodeText,
-  "post-templates": postTemplates,
-  about: about,
-  privacy: privacy,
-}
 
 const q = (s: string) => s.replace(/"/g, "'")
 
