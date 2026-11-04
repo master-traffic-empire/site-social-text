@@ -19,20 +19,18 @@ export const dynamic = "force-dynamic"
 //   1. A known page gets its OWN title and description, read from that page's exported
 //      `metadata` — the same object Next renders into its <title> and meta description, so the
 //      two cannot drift. The tools run in the browser and the page bodies are JSX, not readable
-//      here, so a tool's .md SAYS it is a summary of the page; /about and /privacy are labelled
-//      site-level, which is what they are.
+//      here, so every mapped page (tools, /about, /privacy) SAYS it is a summary of the page.
 //   2. Anything else (including the home page) gets a site-level response that SAYS it is
 //      site-level.
 
-type Label = "summary" | "site-level"
-const PAGES: Record<string, { m: Metadata; content: Label }> = {
-  "linkedin-formatter": { m: linkedinFormatter, content: "summary" },
-  "twitter-thread": { m: twitterThread, content: "summary" },
-  "instagram-caption": { m: instagramCaption, content: "summary" },
-  "unicode-text": { m: unicodeText, content: "summary" },
-  "post-templates": { m: postTemplates, content: "summary" },
-  about: { m: about, content: "site-level" },
-  privacy: { m: privacy, content: "site-level" },
+const PAGES: Record<string, Metadata> = {
+  "linkedin-formatter": linkedinFormatter,
+  "twitter-thread": twitterThread,
+  "instagram-caption": instagramCaption,
+  "unicode-text": unicodeText,
+  "post-templates": postTemplates,
+  about: about,
+  privacy: privacy,
 }
 
 const q = (s: string) => s.replace(/"/g, "'")
@@ -44,14 +42,10 @@ const RESOURCES = `## LLM Resources
 - [Complete Content](${siteConfig.baseUrl}/llms-full.txt) — All content in plain text
 `
 
-function pageMarkdown(slug: string, m: Metadata, content: Label): string {
+function pageMarkdown(slug: string, m: Metadata): string {
   const url = `${siteConfig.baseUrl}/${slug}`
   const title = String(m.title ?? "")
   const description = String(m.description ?? "")
-  const banner =
-    content === "summary"
-      ? `> **This is a summary of the page, not the page itself.** The tool runs in your browser at ${url}`
-      : `> **Site-level page.** This describes ${siteConfig.name} as a whole. The full page is at ${url}`
   return `---
 title: "${q(title)}"
 site: "${q(siteConfig.name)}"
@@ -59,12 +53,12 @@ domain: "${siteConfig.domain}"
 url: "${url}"
 description: "${q(description)}"
 category: "${siteConfig.category}"
-content: "${content}"
+content: "summary"
 ---
 
 # ${title}
 
-${banner}
+> **This is a summary of the page, not the page itself.** The full page is at ${url}
 
 ## Summary
 
@@ -112,7 +106,7 @@ export async function GET(
   const page = slug && Object.hasOwn(PAGES, slug) ? PAGES[slug] : undefined
 
   const markdown =
-    page && slug ? pageMarkdown(slug, page.m, page.content) : siteLevelMarkdown(rawPath)
+    page && slug ? pageMarkdown(slug, page) : siteLevelMarkdown(rawPath)
 
   return new Response(markdown, {
     headers: {
